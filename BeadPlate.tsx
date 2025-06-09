@@ -8,17 +8,16 @@ interface BeadPlateProps {
 
 export const BeadPlate: React.FC<BeadPlateProps> = ({ data }) => {
   const numRows = SCOREBOARD_ROWS;
-  // Calculate number of columns needed. Ensure at least SCOREBOARD_MIN_COLS_DISPLAY or enough for data.
   const numCols = Math.max(
     SCOREBOARD_MIN_COLS_DISPLAY,
     data.length > 0 ? Math.ceil(data.length / numRows) : SCOREBOARD_MIN_COLS_DISPLAY
   );
 
-  const grid: (GameRoundExtended | null)[][] = Array(numRows)
-    .fill(null)
-    .map(() => Array(numCols).fill(null));
+  const grid: (GameRoundExtended | null)[][] = Array.from({ length: numRows }, () =>
+    Array(numCols).fill(null)
+  );
 
-  data.forEach((item, index) => {
+  data.forEach((item: GameRoundExtended, index: number) => {
     const col = Math.floor(index / numRows);
     const row = index % numRows;
     if (row < numRows && col < numCols) {
@@ -42,20 +41,23 @@ export const BeadPlate: React.FC<BeadPlateProps> = ({ data }) => {
       aria-label="Bead Plate Scoreboard"
     >
       {grid.map((rowItems, rowIndex) =>
-        rowItems.map((item, colIndex) => (
-          <div
-            key={`bead-${rowIndex}-${colIndex}`}
-            role="gridcell"
-            aria-label={
-              item
-                ? `Game ${data.indexOf(item) + 1}: ${item.result}, Pair: ${item.pair}, Natural: ${item.natural}`
-                : `Empty cell ${rowIndex + 1}-${colIndex + 1}`
-            }
-            className="w-full aspect-square flex items-center justify-center bg-slate-800"
-          >
-            {item ? getBeadPlateSymbol(item.result, item.pair, item.natural) : <span className="sr-only">Empty</span>}
-          </div>
-        ))
+        rowItems.map((item, colIndex) => {
+          const flatIndex = colIndex * numRows + rowIndex;
+          return (
+            <div
+              key={`bead-${rowIndex}-${colIndex}`}
+              role="gridcell"
+              aria-label={
+                item
+                  ? `Game ${flatIndex + 1}: ${item.result}, Pair: ${item.pair}, Natural: ${item.natural}`
+                  : `Empty cell ${rowIndex + 1}-${colIndex + 1}`
+              }
+              className="w-full aspect-square flex items-center justify-center bg-slate-800"
+            >
+              {item ? getBeadPlateSymbol(item.result, item.pair, item.natural) : <span className="sr-only">Empty</span>}
+            </div>
+          );
+        })
       )}
     </div>
   );
