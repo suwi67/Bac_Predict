@@ -4,7 +4,7 @@ interface LayoutProps {
   children: React.ReactNode;
 }
 
-const Layout = ({ children }) => (
+const Layout: React.FC<LayoutProps> = ({ children }) => (
   <div className="layout">{children}</div>
 );
 
